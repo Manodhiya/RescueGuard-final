@@ -1,0 +1,416 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>RescueGuard | Smart Safety Helmet</title>
+<style>
+:root{
+  --bg:#f4f7fb;--surface:#ffffff;--surface2:#f8fafc;--text:#172033;--muted:#64748b;
+  --line:#e3eaf2;--primary:#2563eb;--primary-soft:#eaf1ff;--green:#15803d;--green-bg:#eaf8ef;
+  --red:#dc2626;--red-bg:#fff0f0;--amber:#b45309;--amber-bg:#fff7e8;--shadow:0 8px 28px rgba(31,52,84,.07);
+}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--text);font:15px/1.5 Inter,Segoe UI,Arial,sans-serif}
+button,input,select,textarea{font:inherit}button{cursor:pointer}
+.app{display:grid;grid-template-columns:250px 1fr;min-height:100vh}
+.sidebar{background:#fff;border-right:1px solid var(--line);padding:24px 16px;display:flex;flex-direction:column;gap:24px}
+.brand{display:flex;align-items:center;gap:12px;padding:4px 8px}.brand-mark{width:42px;height:42px;border-radius:13px;background:linear-gradient(135deg,#2563eb,#60a5fa);display:grid;place-items:center;color:#fff;font-size:22px;font-weight:800}
+.brand h1{font-size:18px;margin:0}.brand small{color:var(--muted);font-size:11px;letter-spacing:1.3px}
+.nav-label{font-size:10px;color:#94a3b8;font-weight:800;letter-spacing:1.5px;padding:0 12px}
+.nav{display:grid;gap:6px}.nav button{border:0;background:transparent;color:#526078;text-align:left;padding:11px 13px;border-radius:10px;font-weight:600;display:flex;gap:12px;align-items:center}
+.nav button.active,.nav button:hover{background:var(--primary-soft);color:var(--primary)}.nav .ico{width:20px;text-align:center;font-size:17px}
+.side-bottom{margin-top:auto;background:#f1f6ff;border:1px solid #e0eaff;border-radius:14px;padding:14px}.side-bottom strong{display:block;font-size:13px}.side-bottom p{font-size:12px;color:var(--muted);margin:5px 0 0}
+main{min-width:0;padding:26px 30px 40px}.topbar{display:flex;justify-content:space-between;align-items:center;gap:16px;margin-bottom:24px}.eyebrow{font-size:11px;color:var(--primary);font-weight:800;letter-spacing:1.5px}.topbar h2{margin:3px 0 0;font-size:25px}.top-actions{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.pill{border:1px solid var(--line);border-radius:999px;padding:8px 12px;background:#fff;color:var(--muted);font-size:12px;font-weight:700}.dot{display:inline-block;width:8px;height:8px;border-radius:50%;background:#94a3b8;margin-right:6px}.dot.on{background:#16a34a}.btn{border:0;border-radius:9px;padding:10px 14px;background:var(--primary);color:white;font-weight:700}.btn:hover{filter:brightness(.96)}.btn.secondary{background:#eef2f7;color:#334155}.btn.danger{background:#fee2e2;color:#b91c1c}.btn.small{padding:7px 10px;font-size:12px}
+.page{display:none}.page.active{display:block}.page-head{display:flex;justify-content:space-between;align-items:flex-start;gap:12px;margin-bottom:18px}.page-head h3{margin:0;font-size:19px}.sub{color:var(--muted);font-size:13px;margin:3px 0 0}
+.grid{display:grid;gap:16px}.stats{grid-template-columns:repeat(4,minmax(0,1fr));margin-bottom:16px}.card{background:var(--surface);border:1px solid var(--line);border-radius:15px;padding:18px;box-shadow:var(--shadow);min-width:0}
+.stat-top{display:flex;justify-content:space-between;align-items:center;color:var(--muted);font-size:12px;font-weight:700}.stat-icon{width:36px;height:36px;border-radius:11px;background:#eff6ff;display:grid;place-items:center;font-size:18px}.stat-value{font-size:29px;font-weight:800;letter-spacing:-1px;margin:12px 0 2px}.stat-foot{font-size:12px;color:var(--muted)}.unit{font-size:14px;color:var(--muted);font-weight:600}
+.status-banner{display:flex;justify-content:space-between;align-items:center;gap:15px;border-radius:14px;padding:16px 18px;margin-bottom:16px;background:var(--green-bg);border:1px solid #ccebd5}.status-banner.warning{background:var(--amber-bg);border-color:#f6dfae}.status-banner.danger{background:var(--red-bg);border-color:#ffd1d1}.status-title{font-weight:800}.status-desc{font-size:12px;color:var(--muted);margin-top:2px}
+.two-col{grid-template-columns:minmax(0,1.5fr) minmax(280px,1fr)}.three-col{grid-template-columns:repeat(3,minmax(0,1fr))}
+.card h4{margin:0 0 3px;font-size:15px}.card .hint{font-size:12px;color:var(--muted);margin:0 0 14px}
+canvas{width:100%;height:230px;display:block}.chart-legend{display:flex;gap:15px;font-size:11px;color:var(--muted);margin-top:8px}.legend-dot{display:inline-block;width:8px;height:8px;border-radius:50%;margin-right:5px}
+.connection-row{display:flex;gap:8px}.connection-row input{flex:1;min-width:0}.field{width:100%;border:1px solid #d8e1ec;border-radius:9px;padding:10px 11px;background:#fff;color:var(--text);outline:none}.field:focus{border-color:#76a4fa;box-shadow:0 0 0 3px #dce9ff}.form-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}.form-group label{display:block;font-size:12px;font-weight:700;color:#526078;margin-bottom:5px}.form-group.full{grid-column:1/-1}.help{font-size:11px;color:var(--muted);margin-top:5px}
+.table-wrap{overflow-x:auto}table{width:100%;border-collapse:collapse;font-size:13px}th,td{text-align:left;padding:12px 10px;border-bottom:1px solid var(--line);white-space:nowrap}th{font-size:11px;color:#718096;text-transform:uppercase;letter-spacing:.7px}tbody tr:last-child td{border-bottom:0}.badge{display:inline-block;border-radius:999px;padding:4px 8px;font-size:11px;font-weight:800;background:#edf2f7;color:#526078}.badge.safe{background:var(--green-bg);color:var(--green)}.badge.warn{background:var(--amber-bg);color:var(--amber)}.badge.danger{background:var(--red-bg);color:var(--red)}
+.actions{display:flex;gap:8px;flex-wrap:wrap}.empty{text-align:center;color:var(--muted);padding:25px;font-size:13px}
+.worker-card{display:flex;align-items:center;gap:12px}.avatar{width:42px;height:42px;border-radius:50%;background:#e8efff;color:var(--primary);display:grid;place-items:center;font-weight:800}.worker-card strong{display:block}.worker-card small{color:var(--muted)}
+.checkline{display:flex;align-items:center;gap:9px;padding:9px 0;border-bottom:1px solid var(--line);font-size:13px}.checkline:last-child{border:0}.checkline input{accent-color:var(--primary);width:16px;height:16px}
+.toast{position:fixed;right:22px;bottom:22px;background:#172033;color:#fff;padding:12px 16px;border-radius:10px;box-shadow:var(--shadow);opacity:0;transform:translateY(10px);transition:.2s;pointer-events:none;z-index:10}.toast.show{opacity:1;transform:translateY(0)}
+footer{text-align:center;color:#94a3b8;font-size:11px;margin-top:28px}
+
+.worker-item{border:1px solid var(--line);border-radius:12px;margin-bottom:10px;background:var(--surface2)}
+.worker-item summary{list-style:none;display:flex;align-items:center;gap:12px;padding:12px;cursor:pointer}
+.worker-item summary::-webkit-details-marker{display:none}
+.worker-item[open] summary{border-bottom:1px solid var(--line)}
+.worker-body{padding:4px 14px 14px}
+.detail-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px 18px;margin:12px 0}
+.detail-grid span{display:block;font-size:10px;color:var(--muted);font-weight:800;text-transform:uppercase;letter-spacing:.6px}
+.detail-grid b{font-weight:600;font-size:13px;word-break:break-word}
+.detail-grid .wide{grid-column:1/-1}
+.form-section{grid-column:1/-1;font-size:11px;font-weight:800;color:var(--primary);letter-spacing:1.3px;margin-top:6px;padding-top:10px;border-top:1px solid var(--line)}
+.form-section:first-child{border-top:0;margin-top:0;padding-top:0}
+.req{color:var(--red)}
+.workers-grid{grid-template-columns:minmax(0,1fr) minmax(0,1.1fr);align-items:start}
+.stack{display:grid;gap:16px;align-content:start}
+.alert-overlay{position:fixed;inset:0;background:rgba(15,23,42,.55);display:none;align-items:center;justify-content:center;padding:18px;z-index:50}
+.alert-overlay.show{display:flex}
+.alert-modal{background:#fff;border-radius:18px;max-width:560px;width:100%;max-height:92vh;overflow:auto;box-shadow:0 20px 60px rgba(0,0,0,.35);border-top:6px solid var(--red)}
+.alert-head{padding:18px 22px 6px;display:flex;justify-content:space-between;align-items:flex-start;gap:10px}
+.alert-head h3{margin:0;color:var(--red);font-size:20px}
+.alert-body{padding:6px 22px 20px}
+.issue{background:var(--red-bg);border:1px solid #ffd1d1;border-radius:11px;padding:10px 12px;margin-bottom:8px}
+.issue strong{display:block;color:var(--red)}.issue span{font-size:12px;color:#7f1d1d}
+.alert-sec{font-size:11px;font-weight:800;letter-spacing:1.3px;color:var(--muted);margin:14px 0 2px}
+.alert-foot{display:flex;gap:8px;flex-wrap:wrap;margin-top:6px}
+.alert-modal a.btn{text-decoration:none;display:inline-block}
+@media(max-width:1050px){.stats{grid-template-columns:repeat(2,minmax(0,1fr))}.two-col,.workers-grid{grid-template-columns:1fr}}
+@media(max-width:720px){.app{grid-template-columns:1fr}.sidebar{padding:12px;border-right:0;border-bottom:1px solid var(--line);gap:12px}.brand{padding:0 5px}.nav{display:flex;overflow-x:auto}.nav button{white-space:nowrap;padding:9px}.nav-label,.side-bottom{display:none}main{padding:20px 14px}.topbar{align-items:flex-start;flex-direction:column}.topbar h2{font-size:22px}.three-col{grid-template-columns:1fr}.form-grid,.detail-grid{grid-template-columns:1fr}.form-group.full{grid-column:auto}}
+</style>
+</head>
+<body>
+<div class="app">
+<aside class="sidebar">
+  <div class="brand"><div class="brand-mark">R</div><div><h1>RescueGuard</h1><small>SMART SAFETY SYSTEM</small></div></div>
+  <div class="nav-label">MAIN MENU</div>
+  <nav class="nav">
+    <button class="active" data-page="overview"><span class="ico">▦</span>Overview</button>
+    <button data-page="workers"><span class="ico">♙</span>Workers</button>
+    <button data-page="alerts"><span class="ico">⚑</span>Alerts & Reports</button>
+    <button data-page="maintenance"><span class="ico">✓</span>Maintenance</button>
+    <button data-page="settings"><span class="ico">⚙</span>Settings</button>
+  </nav>
+  <div class="side-bottom"><strong>RescueGuard Helmet</strong><p>Monitor worker safety and receive emergency alerts from your ESP32 device.</p></div>
+</aside>
+<main>
+  <header class="topbar">
+    <div><div class="eyebrow">WORKPLACE SAFETY MONITORING</div><h2 id="pageTitle">Overview</h2></div>
+    <div class="top-actions"><span class="pill"><span class="dot" id="connectionDot"></span><span id="connectionText">Not connected</span></span><span class="pill" id="clock">--:--:--</span></div>
+  </header>
+
+  <section class="page active" id="overview">
+    <div class="page-head"><div><h3>Live Helmet Dashboard</h3><p class="sub">Live readings from your ESP32 safety helmet.</p></div><button class="btn secondary" id="demoBtn">Use demo data</button></div>
+    <div class="status-banner" id="overallBanner"><div><div class="status-title" id="overallTitle">Waiting for ESP32 data</div><div class="status-desc" id="overallDesc">Connect your ESP32 to view live sensor readings.</div></div><span class="badge" id="overallBadge">OFFLINE</span></div>
+    <div class="grid stats">
+      <div class="card"><div class="stat-top"><span>TEMPERATURE</span><span class="stat-icon">🌡️</span></div><div class="stat-value"><span id="tempValue">--</span> <span class="unit">°C</span></div><div class="stat-foot" id="tempState">Waiting for data</div></div>
+      <div class="card"><div class="stat-top"><span>GAS / SMOKE LEVEL</span><span class="stat-icon">☁️</span></div><div class="stat-value"><span id="gasValue">--</span> <span class="unit">raw</span></div><div class="stat-foot" id="gasState">Waiting for data</div></div>
+      <div class="card"><div class="stat-top"><span>FALL DETECTION</span><span class="stat-icon">🪖</span></div><div class="stat-value" id="fallValue">--</div><div class="stat-foot" id="fallState">Waiting for data</div></div>
+      <div class="card"><div class="stat-top"><span>SOS BUTTON</span><span class="stat-icon">🆘</span></div><div class="stat-value" id="sosValue">--</div><div class="stat-foot" id="sosState">Waiting for data</div></div>
+    </div>
+    <div class="grid two-col">
+      <div class="card"><h4>Sensor History</h4><p class="hint">Recent temperature and gas readings received by this browser.</p><canvas id="chart" width="900" height="260"></canvas><div class="chart-legend"><span><i class="legend-dot" style="background:#2563eb"></i>Temperature (°C)</span><span><i class="legend-dot" style="background:#e59a27"></i>Gas (scaled)</span></div></div>
+      <div class="card"><h4>Live Status</h4><p class="hint">Latest update and the worker wearing this helmet.</p>
+        <p class="sub" id="lastUpdate" style="margin:0 0 12px">No data received yet</p>
+        <div style="border-top:1px solid var(--line);padding-top:12px"><div class="stat-top"><span>MONITORED WORKER</span></div><p style="margin:6px 0 0;font-weight:700" id="activeWorkerInfo">No worker assigned</p><div class="help">Connection and worker assignment are managed in Settings.</div></div>
+        <div class="actions" style="margin-top:14px"><button class="btn secondary small" id="goSettingsBtn">Open settings</button></div>
+      </div>
+    </div>
+    <div class="card" style="margin-top:16px"><h4>Recent Safety Events</h4><p class="hint">Most recent alerts detected by the dashboard.</p><div class="table-wrap"><table><thead><tr><th>Time</th><th>Worker</th><th>Event</th><th>Reading</th><th>Status</th></tr></thead><tbody id="recentEvents"><tr><td colspan="5" class="empty">No events recorded yet.</td></tr></tbody></table></div></div>
+  </section>
+
+  <section class="page" id="workers">
+    <div class="page-head"><div><h3>Worker Management</h3><p class="sub">Complete profile of every worker. These details appear in the emergency notification.</p></div><button class="btn" id="addWorkerBtn">+ Add worker</button></div>
+    <div class="grid workers-grid">
+      <div class="card"><h4>Registered Workers</h4><p class="hint">Tap a worker to view the full profile. Saved in this browser.</p><div id="workerList"><div class="empty">No workers added. Select “Add worker”.</div></div></div>
+      <div class="card"><h4 id="formTitle">Worker Profile</h4><p class="hint">Fields marked <span class="req">*</span> are required.</p>
+        <div class="form-grid">
+          <div class="form-section">PERSONAL DETAILS</div>
+          <div class="form-group full"><label>Full name <span class="req">*</span></label><input class="field" id="wName" placeholder="Worker name"></div>
+          <div class="form-group"><label>Age <span class="req">*</span></label><input class="field" type="number" id="wAge" min="16" max="80" placeholder="e.g. 32"></div>
+          <div class="form-group"><label>Gender</label><select class="field" id="wGender"><option value="">Select</option><option>Male</option><option>Female</option><option>Other</option></select></div>
+          <div class="form-group"><label>Blood group <span class="req">*</span></label><select class="field" id="wBlood"><option value="">Select</option><option>A+</option><option>A-</option><option>B+</option><option>B-</option><option>AB+</option><option>AB-</option><option>O+</option><option>O-</option></select></div>
+          <div class="form-group"><label>Contact number <span class="req">*</span></label><input class="field" type="tel" id="wPhone" placeholder="+91 98765 43210"></div>
+          <div class="form-group full"><label>Address <span class="req">*</span></label><textarea class="field" id="wAddress" rows="2" placeholder="House no., street, city, PIN"></textarea></div>
+          <div class="form-section">WORK DETAILS</div>
+          <div class="form-group"><label>Worker ID <span class="req">*</span></label><input class="field" id="wId" placeholder="RG-001"></div>
+          <div class="form-group"><label>Working role <span class="req">*</span></label><input class="field" id="wRole" placeholder="Miner / Welder / Supervisor"></div>
+          <div class="form-group"><label>Department / site</label><input class="field" id="wDept" placeholder="Mining / Factory"></div>
+          <div class="form-group"><label>Helmet ID</label><input class="field" id="wHelmet" placeholder="RG-H01"></div>
+          <div class="form-group"><label>Date of joining</label><input class="field" type="date" id="wJoined"></div>
+          <div class="form-section">EMERGENCY &amp; MEDICAL</div>
+          <div class="form-group"><label>Emergency contact name <span class="req">*</span></label><input class="field" id="wEmName" placeholder="Family member / guardian"></div>
+          <div class="form-group"><label>Emergency contact number <span class="req">*</span></label><input class="field" type="tel" id="wEmPhone" placeholder="+91 91234 56789"></div>
+          <div class="form-group full"><label>Medical conditions / allergies</label><textarea class="field" id="wMedical" rows="2" placeholder="e.g. Asthma, allergic to penicillin, or “None”"></textarea></div>
+          <div class="form-group full actions"><button class="btn" id="saveWorkerBtn">Save worker</button><button class="btn secondary" id="cancelEditBtn" style="display:none">Cancel edit</button></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="page" id="alerts">
+    <div class="page-head"><div><h3>Alerts & Reports</h3><p class="sub">Review emergency events and export a CSV report.</p></div><div class="actions"><button class="btn secondary" id="exportBtn">Export CSV</button><button class="btn danger" id="clearEventsBtn">Clear history</button></div></div>
+    <div class="card"><div class="form-grid" style="margin-bottom:12px"><div class="form-group"><label>Search events</label><input class="field" id="eventSearch" placeholder="Search event or reading"></div><div class="form-group"><label>Filter by status</label><select class="field" id="eventFilter"><option value="all">All events</option><option value="danger">Emergency</option><option value="warn">Warning</option></select></div></div>
+      <div class="table-wrap"><table><thead><tr><th>Date & time</th><th>Worker</th><th>Event</th><th>Reading</th><th>Severity</th></tr></thead><tbody id="eventTable"><tr><td colspan="5" class="empty">No events recorded yet.</td></tr></tbody></table></div></div>
+  </section>
+
+  <section class="page" id="maintenance">
+    <div class="page-head"><div><h3>Helmet Maintenance</h3><p class="sub">Use this checklist during routine helmet inspection.</p></div></div>
+    <div class="grid two-col">
+      <div class="card"><h4>Inspection Checklist</h4><p class="hint">Tick each item after checking the physical helmet.</p>
+        <label class="checkline"><input type="checkbox" class="maintCheck"> Helmet shell has no visible cracks</label>
+        <label class="checkline"><input type="checkbox" class="maintCheck"> Strap and buckle are secure</label>
+        <label class="checkline"><input type="checkbox" class="maintCheck"> MQ-2 gas sensor is firmly connected</label>
+        <label class="checkline"><input type="checkbox" class="maintCheck"> MPU6050 sensor is firmly connected</label>
+        <label class="checkline"><input type="checkbox" class="maintCheck"> Temperature sensor is working</label>
+        <label class="checkline"><input type="checkbox" class="maintCheck"> SOS button responds correctly</label>
+        <label class="checkline"><input type="checkbox" class="maintCheck"> Battery and wiring are in good condition</label>
+        <div class="actions" style="margin-top:14px"><button class="btn" id="saveCheckBtn">Save inspection</button><span class="sub" id="checkProgress">0 / 7 checked</span></div>
+      </div>
+      <div class="card"><h4>Maintenance Notes</h4><p class="hint">Record repairs, sensor replacement, or battery checks.</p><textarea class="field" id="maintNote" rows="7" placeholder="Enter maintenance notes..."></textarea><div class="actions" style="margin-top:12px"><button class="btn" id="saveNoteBtn">Save note</button></div><div class="help" id="savedNote"></div></div>
+    </div>
+  </section>
+
+  <section class="page" id="settings">
+    <div class="page-head"><div><h3>System Settings</h3><p class="sub">ESP32 connection, alert thresholds and notifications.</p></div></div>
+    <div class="grid two-col">
+      <div class="stack">
+        <div class="card"><h4>ESP32 Connection</h4><p class="hint">Connect directly over the same Wi-Fi network. No Blynk required.</p>
+          <div class="form-group"><label>ESP32 data URL</label><input class="field" id="espUrl" value="http://192.168.1.50/data" placeholder="http://192.168.1.50/data"></div>
+          <div class="help">Replace the example IP with the IP shown in Arduino IDE Serial Monitor.</div>
+          <div class="form-group" style="margin-top:12px"><label>Worker wearing this helmet</label><select class="field" id="activeWorker"><option value="">No worker assigned</option></select>
+          <div class="help">Used in emergency alerts. If your ESP32 sends a <code>helmetId</code> that matches a worker’s Helmet ID, that worker is used automatically.</div></div>
+          <div class="actions" style="margin-top:12px"><button class="btn" id="connectBtn">Connect</button><button class="btn secondary" id="disconnectBtn">Disconnect</button></div>
+          <div class="help" id="connectionHelp">Your ESP32 and this device must be connected to the same Wi-Fi. The ESP32 must run a web server at /data.</div>
+        </div>
+        <div class="card"><h4>Alert Thresholds</h4><p class="hint">Set these values to match your sensor calibration and project requirements.</p>
+          <div class="form-grid">
+            <div class="form-group"><label>Temperature warning (°C)</label><input class="field" type="number" id="tempLimit" value="45"></div>
+            <div class="form-group"><label>Gas warning (raw ADC)</label><input class="field" type="number" id="gasLimit" value="1500"></div>
+            <div class="form-group full"><button class="btn" id="saveSettingsBtn">Save thresholds</button></div>
+          </div><p class="help">These thresholds are evaluated in the browser. They do not change the ESP32 firmware.</p>
+        </div>
+      </div>
+      <div class="stack">
+        <div class="card"><h4>Emergency Notifications</h4><p class="hint">When enabled, an emergency shows a notification with the worker’s details and the cause of the emergency.</p>
+          <div class="actions"><button class="btn secondary" id="notifyBtn">Enable notifications</button><button class="btn secondary" id="testAlertBtn">Send test alert</button></div>
+          <p class="help" id="notifyHelp">Notification support depends on your browser permissions.</p>
+          <p class="help">An on-screen emergency pop-up with the same details always appears, even if browser notifications are blocked.</p>
+        </div>
+        <div class="card"><h4>Data storage</h4><p class="hint">Workers, events, and settings are stored locally in this browser using localStorage.</p><button class="btn danger" id="resetBtn">Reset dashboard data</button></div>
+      </div>
+    </div>
+  </section>
+  <footer>RescueGuard • Smart Emergency Alert Helmet • Project dashboard prototype</footer>
+</main>
+</div>
+<div class="alert-overlay" id="alertOverlay" role="alertdialog" aria-modal="true" aria-labelledby="alertTitle">
+  <div class="alert-modal">
+    <div class="alert-head"><div><h3 id="alertTitle">🚨 EMERGENCY ALERT</h3><div class="sub" id="alertTime"></div></div><span class="badge danger" id="alertTag">LIVE</span></div>
+    <div class="alert-body">
+      <div class="alert-sec" style="margin-top:6px">WHAT HAPPENED</div><div id="alertIssues"></div>
+      <div class="alert-sec">WORKER DETAILS</div><div id="alertWorker"></div>
+      <div class="alert-foot" id="alertFoot"></div>
+    </div>
+  </div>
+</div>
+<div class="toast" id="toast"></div>
+<script>
+(() => {
+  const $ = id => document.getElementById(id);
+  const getStore = (key, fallback) => { try { const v=localStorage.getItem('rg_'+key); return v?JSON.parse(v):fallback; } catch(e){return fallback;} };
+  const setStore = (key,value) => { try { localStorage.setItem('rg_'+key,JSON.stringify(value)); } catch(e){} };
+  let events=getStore('events',[]), workers=getStore('workers',[]), readings=[], poller=null, demoTimer=null;
+  let thresholds=getStore('thresholds',{temp:45,gas:1500});
+  let activeWorkerId=getStore('activeWorker',''), notifyOn=getStore('notifyOn',false), editingIndex=-1, activeIssues=new Set();
+  $('tempLimit').value=thresholds.temp; $('gasLimit').value=thresholds.gas; $('espUrl').value=getStore('espUrl','http://192.168.1.50/data');
+
+  function escapeHtml(s){return String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));}
+  function toast(msg){$('toast').textContent=msg;$('toast').classList.add('show');setTimeout(()=>$('toast').classList.remove('show'),2600);}
+  function timeNow(){return new Date().toLocaleString();}
+  function setConnection(on,msg){$('connectionDot').classList.toggle('on',on);$('connectionText').textContent=msg;}
+  function nav(page){document.querySelectorAll('.page').forEach(p=>p.classList.toggle('active',p.id===page));document.querySelectorAll('.nav button').forEach(b=>b.classList.toggle('active',b.dataset.page===page));$('pageTitle').textContent=({overview:'Overview',workers:'Workers',alerts:'Alerts & Reports',maintenance:'Maintenance',settings:'Settings'})[page];}
+  document.querySelectorAll('.nav button').forEach(b=>b.addEventListener('click',()=>nav(b.dataset.page)));
+  $('goSettingsBtn').addEventListener('click',()=>nav('settings'));
+
+  /* ---------- Workers ---------- */
+  const FIELDS=[['name','wName'],['age','wAge'],['gender','wGender'],['blood','wBlood'],['phone','wPhone'],['address','wAddress'],['id','wId'],['role','wRole'],['dept','wDept'],['helmet','wHelmet'],['joined','wJoined'],['emName','wEmName'],['emPhone','wEmPhone'],['medical','wMedical']];
+  const phoneOk=v=>/^[+\d][\d\s\-()]{6,17}$/.test(v);
+  const row=(l,v,wide)=>`<div${wide?' class="wide"':''}><span>${l}</span><b>${escapeHtml(v||'—')}</b></div>`;
+  function workerDetails(w){
+    return `<div class="detail-grid">${row('Full name',w.name)}${row('Worker ID',w.id)}${row('Age',w.age)}${row('Gender',w.gender)}${row('Blood group',w.blood)}${row('Working role',w.role)}${row('Department / site',w.dept)}${row('Helmet ID',w.helmet)}${row('Contact number',w.phone)}${row('Date of joining',w.joined)}${row('Emergency contact',[w.emName,w.emPhone].filter(Boolean).join(' · '),true)}${row('Address',w.address,true)}${row('Medical conditions / allergies',w.medical,true)}</div>`;
+  }
+  function renderWorkers(){
+    $('workerList').innerHTML=workers.map((w,i)=>`<details class="worker-item"><summary><div class="avatar">${escapeHtml((w.name||'?').slice(0,1).toUpperCase())}</div><div style="flex:1;min-width:0"><strong>${escapeHtml(w.name)}</strong><small>${escapeHtml(w.role||'Role not set')} · ${escapeHtml(w.id)}</small></div><span class="badge danger">🩸 ${escapeHtml(w.blood||'?')}</span></summary><div class="worker-body">${workerDetails(w)}<div class="actions"><button class="btn secondary small" data-edit="${i}">Edit</button><button class="btn danger small" data-remove="${i}">Remove</button></div></div></details>`).join('')||'<div class="empty">No workers added. Select “Add worker”.</div>';
+    document.querySelectorAll('[data-remove]').forEach(b=>b.addEventListener('click',()=>{const i=Number(b.dataset.remove);if(!confirm('Remove '+workers[i].name+'?'))return;if(workers[i].id===activeWorkerId){activeWorkerId='';setStore('activeWorker','');}workers.splice(i,1);setStore('workers',workers);if(editingIndex===i)resetForm();renderWorkers();renderWorkerSelect();}));
+    document.querySelectorAll('[data-edit]').forEach(b=>b.addEventListener('click',()=>startEdit(Number(b.dataset.edit))));
+  }
+  function renderWorkerSelect(){
+    const sel=$('activeWorker');
+    sel.innerHTML='<option value="">No worker assigned</option>'+workers.map(w=>`<option value="${escapeHtml(w.id)}">${escapeHtml(w.name)} (${escapeHtml(w.id)})</option>`).join('');
+    if(!workers.some(w=>w.id===activeWorkerId))activeWorkerId='';
+    sel.value=activeWorkerId;renderActiveWorker();
+  }
+  function renderActiveWorker(){
+    const w=workers.find(x=>x.id===activeWorkerId);
+    $('activeWorkerInfo').textContent=w?`${w.name} · ${w.role||'—'} · ${w.id}`:'No worker assigned';
+  }
+  $('activeWorker').addEventListener('change',()=>{activeWorkerId=$('activeWorker').value;setStore('activeWorker',activeWorkerId);renderActiveWorker();});
+  function resetForm(){FIELDS.forEach(([,id])=>$(id).value='');editingIndex=-1;$('formTitle').textContent='Worker Profile';$('saveWorkerBtn').textContent='Save worker';$('cancelEditBtn').style.display='none';}
+  function startEdit(i){const w=workers[i];FIELDS.forEach(([k,id])=>$(id).value=w[k]||'');editingIndex=i;$('formTitle').textContent='Edit Worker Profile';$('saveWorkerBtn').textContent='Update worker';$('cancelEditBtn').style.display='';$('wName').focus();$('wName').scrollIntoView({behavior:'smooth',block:'center'});}
+  $('cancelEditBtn').addEventListener('click',resetForm);
+  $('addWorkerBtn').addEventListener('click',()=>{resetForm();$('wName').focus();});
+  $('saveWorkerBtn').addEventListener('click',()=>{
+    const w={};FIELDS.forEach(([k,id])=>w[k]=$(id).value.trim());
+    const need=[['name','full name'],['age','age'],['blood','blood group'],['phone','contact number'],['address','address'],['id','worker ID'],['role','working role'],['emName','emergency contact name'],['emPhone','emergency contact number']];
+    const miss=need.find(([k])=>!w[k]);if(miss){toast('Please enter '+miss[1]);return;}
+    const age=Number(w.age);if(!(age>=16&&age<=80)){toast('Enter a valid age (16–80)');return;}
+    if(!phoneOk(w.phone)){toast('Enter a valid contact number');return;}
+    if(!phoneOk(w.emPhone)){toast('Enter a valid emergency contact number');return;}
+    if(workers.some((x,i)=>i!==editingIndex&&x.id.toLowerCase()===w.id.toLowerCase())){toast('Worker ID already exists');return;}
+    if(w.helmet&&workers.some((x,i)=>i!==editingIndex&&(x.helmet||'').toLowerCase()===w.helmet.toLowerCase())){toast('Helmet ID is already assigned to another worker');return;}
+    w.dept=w.dept||'Not specified';
+    if(editingIndex>=0){if(workers[editingIndex].id===activeWorkerId)activeWorkerId=w.id,setStore('activeWorker',w.id);workers[editingIndex]=w;toast('Worker updated');}
+    else{workers.push(w);toast('Worker saved');}
+    setStore('workers',workers);resetForm();renderWorkers();renderWorkerSelect();
+  });
+
+  /* ---------- Events ---------- */
+  function addEvent(event,reading,severity,worker){
+    events.unshift({time:timeNow(),event,reading,severity,worker:worker?worker.name:''});events=events.slice(0,250);setStore('events',events);renderEvents();
+  }
+  function renderEvents(){
+    const line=e=>`<tr><td>${escapeHtml(e.time)}</td><td>${escapeHtml(e.worker||'—')}</td><td>${escapeHtml(e.event)}</td><td>${escapeHtml(e.reading)}</td><td><span class="badge ${e.severity}">${e.severity==='danger'?'Emergency':'Warning'}</span></td></tr>`;
+    $('recentEvents').innerHTML=events.slice(0,5).map(line).join('')||'<tr><td colspan="5" class="empty">No events recorded yet.</td></tr>';
+    const q=($('eventSearch')?.value||'').toLowerCase(),f=$('eventFilter')?.value||'all';
+    const filtered=events.filter(e=>(f==='all'||e.severity===f)&&(e.event+' '+e.reading+' '+e.time+' '+(e.worker||'')).toLowerCase().includes(q));
+    $('eventTable').innerHTML=filtered.map(line).join('')||'<tr><td colspan="5" class="empty">No matching events.</td></tr>';
+  }
+  $('eventSearch').addEventListener('input',renderEvents);$('eventFilter').addEventListener('change',renderEvents);
+  $('exportBtn').addEventListener('click',()=>{if(!events.length){toast('No events to export');return;}const csv=[['Time','Worker','Event','Reading','Severity'],...events.map(e=>[e.time,e.worker||'',e.event,e.reading,e.severity])].map(r=>r.map(v=>'"'+String(v).replace(/"/g,'""')+'"').join(',')).join('\n');const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([csv],{type:'text/csv'}));a.download='RescueGuard_Events.csv';a.click();URL.revokeObjectURL(a.href);});
+  $('clearEventsBtn').addEventListener('click',()=>{if(confirm('Clear all event history?')){events=[];setStore('events',events);renderEvents();toast('Event history cleared');}});
+
+  /* ---------- Emergency alert (pop-up + browser notification) ---------- */
+  function resolveWorker(data){
+    const hid=String(data.helmetId??data.helmet??'').trim().toLowerCase(), wid=String(data.workerId??'').trim().toLowerCase();
+    let w=workers.find(x=>(hid&&(x.helmet||'').toLowerCase()===hid)||(wid&&x.id.toLowerCase()===wid));
+    if(!w)w=workers.find(x=>x.id===activeWorkerId);
+    if(!w&&workers.length===1)w=workers[0];
+    return w||null;
+  }
+  function beep(){try{const a=new (window.AudioContext||window.webkitAudioContext)();[0,.3,.6].forEach(t=>{const o=a.createOscillator(),g=a.createGain();o.frequency.value=880;g.gain.value=.08;o.connect(g);g.connect(a.destination);o.start(a.currentTime+t);o.stop(a.currentTime+t+.18);});}catch(e){}}
+  function notifyReady(){return 'Notification' in window && Notification.permission==='granted' && notifyOn;}
+  function sendNotification(issues,worker,isTest){
+    if(!notifyReady())return;
+    const lines=['Issue: '+issues.map(i=>i.label+' ('+i.reading+')').join(', ')];
+    if(worker){
+      lines.push(`${worker.role||'Worker'} • ID ${worker.id} • Age ${worker.age||'—'} • Blood ${worker.blood||'—'}`);
+      lines.push('Contact: '+(worker.phone||'—'));
+      lines.push('Emergency contact: '+[worker.emName,worker.emPhone].filter(Boolean).join(' – '));
+      lines.push('Address: '+(worker.address||'—'));
+      if(worker.medical)lines.push('Medical: '+worker.medical);
+    }else lines.push('Worker not assigned – select one in Settings.');
+    try{const n=new Notification((isTest?'TEST – ':'')+'🚨 EMERGENCY: '+(worker?worker.name:'Unknown worker'),{body:lines.join('\n'),tag:'rg-emergency',renotify:true,requireInteraction:true});n.onclick=()=>{window.focus();n.close();};}catch(e){}
+  }
+  function showAlert(issues,worker,isTest){
+    $('alertTitle').textContent=(isTest?'TEST – ':'')+'🚨 EMERGENCY ALERT';
+    $('alertTag').textContent=isTest?'TEST':'LIVE';
+    $('alertTime').textContent=timeNow();
+    $('alertIssues').innerHTML=issues.map(i=>`<div class="issue"><strong>${escapeHtml(i.label)} · ${escapeHtml(i.reading)}</strong><span>${escapeHtml(i.desc)}</span></div>`).join('');
+    $('alertWorker').innerHTML=worker?workerDetails(worker):'<div class="empty">No worker is linked to this helmet. Select one in Settings → ESP32 Connection.</div>';
+    let foot='';
+    if(worker&&worker.phone)foot+=`<a class="btn" href="tel:${escapeHtml(worker.phone.replace(/[^\d+]/g,''))}">📞 Call worker</a>`;
+    if(worker&&worker.emPhone)foot+=`<a class="btn secondary" href="tel:${escapeHtml(worker.emPhone.replace(/[^\d+]/g,''))}">📞 Call emergency contact</a>`;
+    foot+='<button class="btn secondary" id="ackBtn">Acknowledge</button>';
+    $('alertFoot').innerHTML=foot;
+    $('ackBtn').addEventListener('click',closeAlert);
+    $('alertOverlay').classList.add('show');beep();
+  }
+  function closeAlert(){$('alertOverlay').classList.remove('show');}
+  document.addEventListener('keydown',e=>{if(e.key==='Escape')closeAlert();});
+  function raiseAlert(issues,worker,isTest){showAlert(issues,worker,isTest);sendNotification(issues,worker,isTest);}
+
+  function updateNotifyUI(){
+    if(!('Notification' in window)){$('notifyBtn').disabled=true;$('notifyHelp').textContent='Notifications are not supported in this browser. The on-screen pop-up will still appear.';return;}
+    const on=notifyReady();$('notifyBtn').textContent=on?'Disable notifications':'Enable notifications';
+    $('notifyHelp').textContent=on?'Notifications are ON. You will be notified with the worker details and the emergency issue.':Notification.permission==='denied'?'Notifications are blocked. Allow them in your browser’s site settings (they may need the page to be opened from http://localhost or https).':'Notifications are OFF.';
+  }
+  $('notifyBtn').addEventListener('click',async()=>{
+    if(!('Notification' in window))return;
+    if(notifyReady()){notifyOn=false;setStore('notifyOn',false);updateNotifyUI();toast('Notifications disabled');return;}
+    let p=Notification.permission;if(p!=='granted'){try{p=await Notification.requestPermission();}catch(e){}}
+    if(p==='granted'){notifyOn=true;setStore('notifyOn',true);toast('Notifications enabled');}
+    updateNotifyUI();
+  });
+  $('testAlertBtn').addEventListener('click',()=>{
+    const w=workers.find(x=>x.id===activeWorkerId)||workers[0]||null;
+    raiseAlert([{label:'SOS button pressed',reading:'SOS = 1',desc:'This is a test of the emergency alert.'}],w,true);
+  });
+
+  /* ---------- Live data ---------- */
+  function update(data){
+    const temp=Number(data.temp ?? data.temperature ?? NaN), gas=Number(data.gas ?? data.gasRaw ?? NaN);
+    const fallRaw=data.fall ?? data.fallDetected ?? false, sosRaw=data.sos ?? data.sosPressed ?? false;
+    const active=v=>v===true || v===1 || v==='1' || String(v).toLowerCase()==='true' || String(v).toLowerCase()==='detected' || String(v).toLowerCase()==='pressed' || String(v).toLowerCase()==='yes';
+    const fall=active(fallRaw), sos=active(sosRaw);
+    const gasStatus=String(data.gasStatus||'').toLowerCase();
+    const tempBad=Number.isFinite(temp)&&temp>=Number(thresholds.temp);
+    const gasBad=(Number.isFinite(gas)&&gas>=Number(thresholds.gas))||gasStatus==='danger'||gasStatus==='unsafe';
+    const statusText=String(data.overall||data.status||'').toLowerCase();
+    const overallBad=sos||fall||tempBad||gasBad||statusText==='danger';
+    const warning=!overallBad && statusText==='warning';
+    $('tempValue').textContent=Number.isFinite(temp)?temp.toFixed(1):'--';
+    $('gasValue').textContent=Number.isFinite(gas)?Math.round(gas):'--';
+    $('fallValue').textContent=fall?'DETECTED':'No';
+    $('sosValue').textContent=sos?'PRESSED':'Off';
+    $('tempState').textContent=!Number.isFinite(temp)?'No temperature value':tempBad?'Above configured threshold':'Normal';
+    $('gasState').textContent=!Number.isFinite(gas)?'No gas value':gasBad?'Possible gas / smoke warning':'Within configured threshold';
+    $('fallState').textContent=fall?'Possible fall detected':'No fall detected';
+    $('sosState').textContent=sos?'Emergency button activated':'Not activated';
+    const banner=$('overallBanner');banner.className='status-banner'+(overallBad?' danger':warning?' warning':'');
+    $('overallTitle').textContent=overallBad?'Emergency condition detected':warning?'Warning condition':'Helmet status is safe';
+    $('overallDesc').textContent=overallBad?'Check the worker and respond to the alert immediately.':warning?'One or more readings need attention.':'No active emergency condition reported.';
+    $('overallBadge').textContent=overallBad?'EMERGENCY':warning?'WARNING':'SAFE';
+    $('overallBadge').className='badge '+(overallBad?'danger':warning?'warn':'safe');
+    $('lastUpdate').textContent='Last received: '+timeNow();
+    readings.push({time:new Date(),temp:Number.isFinite(temp)?temp:null,gas:Number.isFinite(gas)?gas:null});if(readings.length>30)readings.shift();drawChart();
+
+    const issues=[];
+    if(sos)issues.push({key:'sos',label:'SOS button pressed',reading:'SOS = 1',desc:'The worker pressed the SOS button and needs immediate help.'});
+    if(fall)issues.push({key:'fall',label:'Fall detected',reading:'Fall = 1',desc:'The helmet motion sensor detected a sudden fall. The worker may be injured or unconscious.'});
+    if(tempBad)issues.push({key:'temp',label:'High temperature',reading:temp+' °C',desc:'Temperature is above the safe limit of '+thresholds.temp+' °C. Risk of fire or heat stress.'});
+    if(gasBad)issues.push({key:'gas',label:'Gas / smoke threshold exceeded',reading:Number.isFinite(gas)?Math.round(gas)+' raw':'sensor alarm',desc:'Dangerous gas or smoke level detected around the worker.'});
+    if(!issues.length&&statusText==='danger')issues.push({key:'device',label:'Emergency reported by helmet',reading:'status = danger',desc:'The helmet reported an emergency status.'});
+    const fresh=issues.filter(i=>!activeIssues.has(i.key));
+    if(fresh.length){
+      const worker=resolveWorker(data);
+      fresh.forEach(i=>addEvent(i.label,i.reading,'danger',worker));
+      raiseAlert(issues,worker,false);
+    }
+    activeIssues=new Set(issues.map(i=>i.key));
+  }
+  async function fetchData(){
+    const url=$('espUrl').value.trim();if(!url){toast('Enter your ESP32 data URL');return;}
+    try{
+      const response=await fetch(url,{cache:'no-store',headers:{'Accept':'application/json'}});
+      if(!response.ok)throw new Error('HTTP '+response.status);
+      const data=await response.json();update(data);setConnection(true,'Connected');$('connectionHelp').textContent='Connected. Sensor data is being refreshed every 2 seconds.';
+    }catch(err){setConnection(false,'Connection failed');$('connectionHelp').textContent='Could not read ESP32 data: '+err.message+'. Check the IP, Wi-Fi, server, and CORS settings.';}
+  }
+  $('connectBtn').addEventListener('click',()=>{setStore('espUrl',$('espUrl').value.trim());stopDemo();if(poller)clearInterval(poller);fetchData();poller=setInterval(fetchData,2000);});
+  $('disconnectBtn').addEventListener('click',()=>{if(poller)clearInterval(poller);poller=null;stopDemo();setConnection(false,'Not connected');$('connectionHelp').textContent='Disconnected from ESP32.';});
+  function stopDemo(){if(demoTimer)clearInterval(demoTimer);demoTimer=null;}
+  $('demoBtn').addEventListener('click',()=>{if(poller)clearInterval(poller);poller=null;stopDemo();setConnection(true,'Demo mode');let i=0;const sample=()=>{i++;update({temp:29+Math.sin(i/3)*2,gas:520+Math.round(Math.sin(i/4)*80),fall:0,sos:0});};sample();demoTimer=setInterval(sample,2000);toast('Demo data started. This is not real sensor data.');});
+  function drawChart(){
+    const c=$('chart'),ctx=c.getContext('2d'),w=c.width,h=c.height,pad=38;ctx.clearRect(0,0,w,h);
+    ctx.strokeStyle='#e8edf4';ctx.fillStyle='#718096';ctx.font='12px Arial';
+    for(let i=0;i<5;i++){let y=pad+i*(h-2*pad)/4;ctx.beginPath();ctx.moveTo(pad,y);ctx.lineTo(w-pad,y);ctx.stroke();}
+    const validT=readings.filter(r=>r.temp!==null),validG=readings.filter(r=>r.gas!==null);
+    const maxT=Math.max(60,...validT.map(r=>r.temp)),maxG=Math.max(2000,...validG.map(r=>r.gas));
+    function line(arr,key,max,color){if(arr.length<2)return;ctx.strokeStyle=color;ctx.lineWidth=3;ctx.beginPath();arr.forEach((r,i)=>{const x=pad+i*(w-2*pad)/Math.max(1,arr.length-1),v=r[key];const y=h-pad-(v/max)*(h-2*pad);i?ctx.lineTo(x,y):ctx.moveTo(x,y);});ctx.stroke();}
+    line(validT,'temp',maxT,'#2563eb');line(validG,'gas',maxG,'#e59a27');
+    ctx.fillStyle='#718096';ctx.fillText('Recent readings',pad,h-10);
+  }
+
+  /* ---------- Maintenance & settings ---------- */
+  function updateProgress(){const n=document.querySelectorAll('.maintCheck:checked').length;$('checkProgress').textContent=n+' / 7 checked';}
+  document.querySelectorAll('.maintCheck').forEach(c=>c.addEventListener('change',updateProgress));
+  $('saveCheckBtn').addEventListener('click',()=>{setStore('checklist',[...document.querySelectorAll('.maintCheck')].map(c=>c.checked));toast('Inspection checklist saved');});
+  const savedChecks=getStore('checklist',[]);document.querySelectorAll('.maintCheck').forEach((c,i)=>c.checked=!!savedChecks[i]);updateProgress();
+  $('saveNoteBtn').addEventListener('click',()=>{setStore('maintNote',$('maintNote').value);$('savedNote').textContent='Note saved in this browser.';});
+  $('maintNote').value=getStore('maintNote','');
+  $('saveSettingsBtn').addEventListener('click',()=>{thresholds={temp:Number($('tempLimit').value)||45,gas:Number($('gasLimit').value)||1500};setStore('thresholds',thresholds);toast('Thresholds saved');});
+  $('resetBtn').addEventListener('click',()=>{if(confirm('Reset workers, events, settings, and maintenance data in this browser?')){['events','workers','thresholds','checklist','maintNote','activeWorker','notifyOn','espUrl'].forEach(k=>localStorage.removeItem('rg_'+k));location.reload();}});
+  function tick(){$('clock').textContent=new Date().toLocaleTimeString();}tick();setInterval(tick,1000);
+  renderEvents();renderWorkers();renderWorkerSelect();updateNotifyUI();drawChart();
+})();
+</script>
+</body>
+</html>
